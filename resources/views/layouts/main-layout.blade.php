@@ -32,6 +32,7 @@
     <script src="{{ asset('bookstores/bootstrap/js/bootstrap.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('bookstores/bootstrap/js/bootstrap.min.js.map') }}" type="text/javascript"></script>
     <script src="{{ asset('bookstores/toastr/js/toastr.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('global/js/main.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
         const urlBase = {!! json_encode(url('/'))!!};
     </script>
