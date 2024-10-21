@@ -2,175 +2,77 @@
 namespace App\Services;
 
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Client; // Se importa la libreria Guzzle
+use GuzzleHttp\Client;
 
-class ServiceControl{
-
-    protected $client;
-    protected $baseUri;
+class ServiceControl {
+    protected $clientHttp;
     public $headers;
 
-    public function __construct(){
-        $this->headers = array(
-            'Accept'        => 'application/json',
+    public function __construct() {
+        $this->inicializarCliente();
+    }
+
+    public function inicializarCliente() {
+        $this->clientHttp = new Client(['base_uri' => 'http://laravel_api/public/']);
+        $this->headers = [
+            'Accept' => 'application/json',
             'Authorization' => ''
-        );
+        ];
     }
 
-    /**
-     * Funcion para el metodo GET
-     * @param String $route -> con la ruta a usar
-     * @param String $paramsURL -> con los parametros para la ruta si los tiene
-     */
-    public function peticionGET(String $route, String $paramsURL = null)
-    {
-        $this->client = new Client(['base_uri' =>  env('APIREST_URL')]);
+    public function setAuthorizationToken($token) {
+        $this->headers['Authorization'] = 'Bearer ' . $token;
+    }
 
-        /* Se envia token del api */
-        // $this->headers['Authorization'] = 'Bearer ' . session('tokenAPI');
-
-        $finalRoute = $route;
-        if ($paramsURL != null) { $finalRoute = $finalRoute.'/'.$paramsURL; }
+    private function realizarPeticion($method, $route, $paramsURL = null, $dataRequest = null) {
+        $finalRoute = $route . ($paramsURL ? '/' . $paramsURL : '');
+        $options = ['headers' => $this->headers];
+        if ($dataRequest !== null) {
+            $options['json'] = $dataRequest;
+        }
 
         try {
-            $rtaApi = $this->client->request('GET', $finalRoute, [
-                'headers' => $this->headers
-            ]);
-            return json_decode($rtaApi->getBody()->getContents(), true);
+            $response = $this->clientHttp->request($method, $finalRoute, $options);
+            return json_decode($response->getBody()->getContents(), true);
         } catch (RequestException $e) {
             return $this->manejoErrores($e);
         }
     }
 
-    /**
-     * Funcion para el metodo POST
-     * @param String $route -> con la ruta a usar
-     * @param Array $dataRequest -> con los parametros del Body de la peticion
-     */
-    public function peticionPOST(String $route, Array $dataRequest)
-    {
-        $this->client = new Client(['base_uri' =>  env('APIREST_URL')]);
-
-        /* Se envia token del api */
-        // $this->headers['Authorization'] = 'Bearer ' . session('tokenAPI');
-
-        try {
-            $rtaApi = $this->client->request('POST', $route, [
-                'json' => $dataRequest,
-                'headers' => $this->headers
-            ]);
-            return json_decode($rtaApi->getBody()->getContents(), true);
-        } catch (RequestException $e) {
-            return $this->manejoErrores($e);
-        }
+    public function peticionGET($route, $paramsURL = null) {
+        return $this->realizarPeticion('GET', $route, $paramsURL);
     }
 
-    /**
-     * Funcion para el metodo POST
-     * @param String $route -> con la ruta a usar
-     * @param String $paramsURL -> con los parametros para la ruta si los tiene
-     * @param Array $dataRequest -> con los parametros del Body de la peticion
-     */
-    public function peticionPUT(String $route, String $paramsURL, Array $dataRequest)
-    {
-        $this->client = new Client(['base_uri' =>  env('APIREST_URL')]);
-
-        /* Se envia token del api */
-        // $this->headers['Authorization'] = 'Bearer ' . session('tokenAPI');
-
-        $finalRoute = $route;
-        if ($paramsURL != null) { $finalRoute = $finalRoute.'/'.$paramsURL; }
-
-        try {
-            $rtaApi = $this->client->request('PUT', $finalRoute, [
-                'json' => $dataRequest,
-                'headers' => $this->headers
-            ]);
-            return json_decode($rtaApi->getBody()->getContents(), true);
-        } catch (RequestException $e) {
-            return $this->manejoErrores($e);
-        }
-    }
-    
-    /**
-     * Funcion para el metodo DELETE
-     * @param String $route -> con la ruta a usar
-     * @param String $paramsURL -> con los parametros para la ruta si los tiene
-     */
-    public function peticionDELETE(String $route, String $paramsURL = null)
-    {
-        $this->client = new Client(['base_uri' => env('APIREST_URL')]);
-
-        /* Se envia token del api */
-        // $this->headers['Authorization'] = 'Bearer ' . session('tokenAPI');
-
-        $finalRoute = $route;
-        if ($paramsURL != null) {
-            $finalRoute = $finalRoute . '/' . $paramsURL;
-        }
-
-        try {
-            $rtaApi = $this->client->request('DELETE', $finalRoute, [
-                'headers' => $this->headers
-            ]);
-            return json_decode($rtaApi->getBody()->getContents(), true);
-        } catch (RequestException $e) {
-            return $this->manejoErrores($e);
-        }
+    public function peticionPOST($route, $dataRequest) {
+        return $this->realizarPeticion('POST', $route, null, $dataRequest);
     }
 
-    /**
-     * Funcion para reconocer el error
-     * @param Int $codeError -> con el codigo de error
-     * @param String $msgApi -> con el mensaje de error del api
-     * @return String $msg -> con el mensaje correspondiente
-     */
-    public function reconocerErrorAPI($code,$msgApi = null)
-    {
-        $msg = '';
-        switch ($code) {
-            case 401:
-                $msg = 'No esta autorizado para obtener el recurso. (CODE: API-401) -> '.$msgApi;
-                break;
-
-            case 404:
-                $msg = 'No se puede obtener el recurso. (CODE: API-404) -> '.$msgApi;
-                break;
-
-            case 429:
-                $msg = 'Se hicieron muchas peticiones. (CODE: API-429) -> '.$msgApi;
-                break;
-
-            case 500:
-                $msg = 'Fallo al conectar al servidor. (CODE: API-500) -> '.$msgApi;
-                break;
-
-            default:
-                $msg = 'Error sin parametrizar. (CODE: API-OTH) -> '.$msgApi;
-                break;
-        }
-        return $msg;
+    public function peticionPUT($route, $paramsURL, $dataRequest) {
+        return $this->realizarPeticion('PUT', $route, $paramsURL, $dataRequest);
     }
 
-    /**
-     * Función para retornar el detalle de la excepcion/error en las peticiones
-     * @param RequestException $e con los detalles de la excepcion
-     * @return Array con el resultado del analisis
-     */
-    public function manejoErrores(RequestException $exception)
-    {
-        // dd($exception);
-        $statusCode = $exception->getResponse()->getStatusCode();
+    public function peticionDELETE($route, $paramsURL = null) {
+        return $this->realizarPeticion('DELETE', $route, $paramsURL);
+    }
+
+    public function manejoErrores(RequestException $exception) {
+        $statusCode = $exception->getResponse() ? $exception->getResponse()->getStatusCode() : 'N/A';
         $apiErrorMessage = $exception->getMessage();
-
-        return json_decode(
-            json_encode([
-                'errorAPI' => [
-                    'code' => 'api'.$statusCode,
-                    'message' => $this->reconocerErrorAPI($statusCode,$apiErrorMessage)
-                ]
-            ])
-        ,true);
+        return [
+            'errorAPI' => [
+                'code' => 'api' . $statusCode,
+                'message' => $this->reconocerErrorAPI($statusCode, $apiErrorMessage)
+            ]
+        ];
     }
 
+    public function reconocerErrorAPI($code, $msgApi = null) {
+        $messages = [
+            401 => 'No está autorizado para obtener el recurso.',
+            404 => 'No se puede obtener el recurso.',
+            429 => 'Se hicieron muchas peticiones.',
+            500 => 'Fallo al conectar al servidor.'
+        ];
+        return ($messages[$code] ?? 'Error sin parametrizar.') . ' (CODE: API-' . $code . ') -> ' . $msgApi;
+    }
 }
