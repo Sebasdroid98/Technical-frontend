@@ -11,7 +11,7 @@ class BookService extends ServiceControl
      */
     public function getListBooks()
     {
-        return $this->peticionGET('v1/books');
+        return $this->peticionGET('public/api/v1/books');
     }
 
     /**
@@ -21,7 +21,7 @@ class BookService extends ServiceControl
      */
     public function getBookById(int $id)
     {
-        return $this->peticionGET('v1/books', $id);
+        return $this->peticionGET('public/api/v1/books', $id);
     }
 
     /**
@@ -30,7 +30,7 @@ class BookService extends ServiceControl
      * @return array
      */
     public function storeBook(array $datosLibro) {
-        return $this->peticionPOST('v1/books', $datosLibro);
+        return $this->peticionPOST('public/api/v1/books', $datosLibro);
     }
 
     /**
@@ -40,7 +40,7 @@ class BookService extends ServiceControl
      * @return array
      */
     public function updateBook(array $datosLibro, int $idLibro) {
-        return $this->peticionPUT('v1/books', $idLibro,$datosLibro);
+        return $this->peticionPUT('public/api/v1/books', $idLibro,$datosLibro);
     }
 
     /**
@@ -50,7 +50,7 @@ class BookService extends ServiceControl
      */
     public function deleteBookById(int $id)
     {
-        return $this->peticionDELETE('v1/books', $id);
+        return $this->peticionDELETE('public/api/v1/books', $id);
     }
 
 }
