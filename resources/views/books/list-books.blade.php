@@ -14,6 +14,11 @@
     <x-errors-display :errores="$errores" />
 
     <section class="row mt-3 mt-md-3 mt-lg-3 mt-xl-3">
+        <article class="col-12 col-md-12 col-lg-12 col-xl-12 mb-3 mb-md-3 mb-lg-3 mb-lxl-3">
+            <section class="alert alert-info text-center">
+                <b>Notificación</b> Puede presentarse lentitud en las peticiones al API.
+            </section>
+        </article>
         <article class="col-12 col-md-8 col-lg-8 col-xl-8">
             <x-card idBody="">
                 <h3 class="text-center">Libros dísponibles</h3>
