@@ -41,7 +41,7 @@
                 </ul>
             </x-card>
         </article>
-    
+
         <article class="col-12 col-md-4 col-lg-4 col-xl-4">
             <x-card>
                 <article id="space-form-book">
@@ -62,8 +62,8 @@
 @endsection
 
 @section('scripts-footer')
-    <script src="{{ asset('global/js/create-book.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('global/js/edit-book.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('global/js/updated-book.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('global/js/delete-book.js') }}" type="text/javascript"></script>
+    <script src="/public/global/js/create-book.js" type="text/javascript"></script>
+    <script src="/public/global/js/edit-book.js" type="text/javascript"></script>
+    <script src="/public/global/js/updated-book.js" type="text/javascript"></script>
+    <script src="/public/global/js/delete-book.js" type="text/javascript"></script>
 @endsection
