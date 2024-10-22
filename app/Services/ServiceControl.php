@@ -13,7 +13,7 @@ class ServiceControl {
     }
 
     public function inicializarCliente() {
-        $this->clientHttp = new Client(['base_uri' => 'https://technical-frontend.onrender.com/public/']);
+        $this->clientHttp = new Client(['base_uri' => 'https://technical-backend.onrender.com/public/']);
         $this->headers = [
             'Accept' => 'application/json',
             'Authorization' => ''
